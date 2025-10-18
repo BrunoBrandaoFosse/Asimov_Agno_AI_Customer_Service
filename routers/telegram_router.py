@@ -1,5 +1,7 @@
 import os
 import telebot
+import logging
+import colorlog
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente
@@ -10,6 +12,23 @@ TELEGRAM_API_KEY = os.getenv('TELEGRAM_API_KEY')
 # Criar instância do bot
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
+handler = colorlog.StreamHandler()
+handler.setFormatter(colorlog.ColoredFormatter(
+    '%(log_color)s%(asctime)s [%(threadName)s] %(levelname)s: %(message)s',
+    log_colors={
+        'DEBUG':    'cyan',
+        'INFO':     'green',
+        'WARNING':  'yellow',
+        'ERROR':    'red',
+        'CRITICAL': 'bold_red',
+    }
+))
+
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[handler]
+)
+
 # Handler para comando /start
 # Quando o usuário inicia o bot, ele recebe uma mensagem de boas-vindas
 @bot.message_handler(commands=['start'])
@@ -19,7 +38,7 @@ def send_welcome(message):
     first_name = message.from_user.first_name
     
     # Aqui você pode salvar em banco de dados ou arquivo
-    print(f"Novo usuário: {first_name} - Chat ID: {chat_id}")
+    logging.info(f"Novo usuário: {first_name} - Chat ID: {chat_id}")
 
     bot.reply_to(message, "Olá! Bem-vindo ao bot.")
 
@@ -38,5 +57,5 @@ def enviar_mensagem_direta(chat_id, texto):
     bot.send_message(chat_id, texto)
 
 def run_bot():
-    print("Bot está rodando...")
+    logging.info("Bot está rodando...")
     bot.infinity_polling()
