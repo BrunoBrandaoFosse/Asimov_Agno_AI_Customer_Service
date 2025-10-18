@@ -1,0 +1,10 @@
+[project]
+name = "asimov-agno-ai-customer-service"
+version = "0.1.0"
+description = "Agente de IA para atendimento ao cliente com Agno, Docker, RedisVL (para cache semântico)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.119.0",
+    "uvicorn>=0.38.0",
+]

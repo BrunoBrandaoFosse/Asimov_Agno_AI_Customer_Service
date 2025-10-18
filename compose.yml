@@ -1,0 +1,10 @@
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./:/app
+    command: tail -f /dev/null
