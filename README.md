@@ -7,5 +7,5 @@
 docker compose up
 
 # Rodar a API
-fastapi dev app.py
+fastapi dev main.py
 ```

@@ -1,8 +1,10 @@
 import os
 import telebot
-import logging
-import colorlog
 from dotenv import load_dotenv
+from logger_config import setup_logger
+
+# Inicializa o logger
+logger = setup_logger()
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -12,22 +14,7 @@ TELEGRAM_API_KEY = os.getenv('TELEGRAM_API_KEY')
 # Criar instância do bot
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
-handler = colorlog.StreamHandler()
-handler.setFormatter(colorlog.ColoredFormatter(
-    '%(log_color)s%(asctime)s [%(threadName)s] %(levelname)s: %(message)s',
-    log_colors={
-        'DEBUG':    'cyan',
-        'INFO':     'green',
-        'WARNING':  'yellow',
-        'ERROR':    'red',
-        'CRITICAL': 'bold_red',
-    }
-))
-
-logging.basicConfig(
-    level=logging.INFO,
-    handlers=[handler]
-)
+# --------------------------------------------------------------------------
 
 # Handler para comando /start
 # Quando o usuário inicia o bot, ele recebe uma mensagem de boas-vindas
@@ -38,9 +25,10 @@ def send_welcome(message):
     first_name = message.from_user.first_name
     
     # Aqui você pode salvar em banco de dados ou arquivo
-    logging.info(f"Novo usuário: {first_name} - Chat ID: {chat_id}")
+    logger.info(f"Novo usuário: {first_name} - Chat ID: {chat_id}")
 
-    bot.reply_to(message, "Olá! Bem-vindo ao bot.")
+ 
+# --------------------------------------------------------------------------
 
 # Handler para receber mensagens e responder o usuário
 @bot.message_handler(func=lambda message: True)
@@ -50,6 +38,8 @@ def handle_message(message):
     
     resposta = f"Olá {user_name}! Você disse: {texto}"
     bot.reply_to(message, resposta)
+ 
+# --------------------------------------------------------------------------
 
 # Função para enviar mensagem diretamente (sem ser resposta)
 def enviar_mensagem_direta(chat_id, texto):
@@ -57,5 +47,5 @@ def enviar_mensagem_direta(chat_id, texto):
     bot.send_message(chat_id, texto)
 
 def run_bot():
-    logging.info("Bot está rodando...")
+    logger.info("Bot está rodando...")
     bot.infinity_polling()
