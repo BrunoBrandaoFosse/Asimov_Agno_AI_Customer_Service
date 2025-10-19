@@ -1,25 +1,16 @@
-import os
-import telebot
-from dotenv import load_dotenv
 from logger_config import setup_logger
+from bot_instance import bot
+from workers import tasks
 
 # Inicializa o logger
 logger = setup_logger()
 
-# Carregar variáveis de ambiente
-load_dotenv()
-
-TELEGRAM_API_KEY = os.getenv('TELEGRAM_API_KEY')
-
-# Criar instância do bot
-bot = telebot.TeleBot(TELEGRAM_API_KEY)
-
 # --------------------------------------------------------------------------
 
 # Handler para comando /start
-# Quando o usuário inicia o bot, ele recebe uma mensagem de boas-vindas
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    """Envia uma mensagem de boas-vindas ao usuário que inicia o bot"""
     chat_id = message.chat.id
     # user_id = message.from_user.id
     first_name = message.from_user.first_name
@@ -27,25 +18,32 @@ def send_welcome(message):
     # Aqui você pode salvar em banco de dados ou arquivo
     logger.info(f"Novo usuário: {first_name} - Chat ID: {chat_id}")
 
- 
+    bot.reply_to(message, "Olá! Bem-vindo ao bot.")
+
 # --------------------------------------------------------------------------
 
-# Handler para receber mensagens e responder o usuário
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
-    texto = message.text
+    """Manipula mensagens recebidas e responde ao usuário"""
+    msg = message.text
     user_name = message.from_user.first_name
-    
-    resposta = f"Olá {user_name}! Você disse: {texto}"
-    bot.reply_to(message, resposta)
- 
+
+    # Gera a resposta
+    # resposta = f"Olá {user_name}! Você disse: {msg}"
+    # bot.reply_to(message, resposta)
+
+    logger.info(f"Recebida mensagem de {user_name}: {msg}")
+
+    # Envia a tarefa para o Celery processar a resposta
+    tasks.task_answer.delay(message.chat.id, msg)
+
 # --------------------------------------------------------------------------
 
-# Função para enviar mensagem diretamente (sem ser resposta)
-def enviar_mensagem_direta(chat_id, texto):
+def send_direct_message(chat_id, texto):
     """Envia uma mensagem diretamente para um chat específico"""
     bot.send_message(chat_id, texto)
 
 def run_bot():
+    """Inicia o bot do Telegram"""
     logger.info("Bot está rodando...")
     bot.infinity_polling()
