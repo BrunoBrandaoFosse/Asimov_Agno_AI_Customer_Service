@@ -5,10 +5,12 @@ description = "Agente de IA para atendimento ao cliente com Agno, Docker, RedisV
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "agno>=2.1.8",
     "celery>=5.5.3",
     "colorlog>=6.10.1",
     "dotenv>=0.9.9",
     "fastapi[standard]>=0.119.0",
+    "openai>=2.5.0",
     "telebot>=0.0.5",
     "uvicorn>=0.38.0",
 ]
