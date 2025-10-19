@@ -12,6 +12,7 @@ dependencies = [
     "fastapi[standard]>=0.119.0",
     "openai>=2.5.0",
     "redisvl>=0.10.0",
+    "sentence-transformers>=5.1.1",
     "telebot>=0.0.5",
     "uvicorn>=0.38.0",
 ]

@@ -14,11 +14,8 @@ def setup_logger(level=logging.INFO):
         }
     ))
 
-    # Configura o logger raiz
-    logging.basicConfig(
-        level=level,
-        handlers=[handler]
-    )
-
-    # Retorna o logger padrão (raiz)
-    return logging.getLogger()
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    logger.handlers = []  # Remove outros handlers
+    logger.addHandler(handler)
+    return logger
